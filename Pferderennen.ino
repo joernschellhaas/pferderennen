@@ -136,17 +136,38 @@ uint8_t getLEDIndex(uint8_t player, uint8_t number) {
 }
 
 void output(){
+  // Print player progress
   for(uint8_t p = 0; p < PLAYERS; p++) {
     for(uint8_t n = 0; n < STEPS; n++) {
       leds.setPixelColor(getLEDIndex(p, n), counter[p] > n ? COLORS[p] : 0x000000);
     }
   }
+  
   switch(state){
     case STATE_DONE_WAIT:
       if((millis() - stateSince) % 1000 > 500){
         for(uint8_t n = 0; n < STEPS; n++) {
           leds.setPixelColor(getLEDIndex(winner, n), 0xFFFFFF);
         }
+      }
+      break;
+ 
+    case STATE_IDLE:
+    case STATE_DONE:
+      int pixel_offset = millis() >> 5;
+      for(int i=0; i<leds.numPixels() / 2; i++) { // For each pixel in strip...
+        // Offset pixel hue by an amount to make one full revolution of the
+        // color wheel (range of 65536) along the length of the strip
+        // (strip.numPixels() steps):
+        int pixelHue = i * 65536L / leds.numPixels() * 2 / 3;
+        // strip.ColorHSV() can take 1 or 3 arguments: a hue (0 to 65535) or
+        // optionally add saturation and value (brightness) (each 0 to 255).
+        // Here we're using just the single-argument hue variant. The result
+        // is passed through strip.gamma32() to provide 'truer' colors
+        // before assigning to each pixel:
+        auto color = leds.gamma32(leds.ColorHSV(pixelHue));
+        leds.setPixelColor((pixel_offset + i) % leds.numPixels(), color);
+        leds.setPixelColor((pixel_offset - i - 1) % leds.numPixels(), color);
       }
       break;
   }
