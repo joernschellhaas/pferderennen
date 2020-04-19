@@ -18,6 +18,7 @@ typedef struct{
 typedef struct{
   uint8_t state;
   uint32_t until;
+  bool polarity;
 } t_inputstate;
 
 #define PLAYERS 2
@@ -95,7 +96,10 @@ void logic(){
 void setupInput(){
   for(uint8_t i = 0; i < COUNTOF(INPUTMAP); i++){
     pinMode(INPUTMAP[i].pin, INPUT);
-    inputs[i].state = digitalRead(INPUTMAP[i].pin);
+    bool start_value = digitalRead(INPUTMAP[i].pin);
+    inputs[i].state = start_value;
+    // Auto detect polarity at startup. It does not really matter if we get it wrong; in this case we trigger when the ball leaves the detector.
+    inputs[i].polarity = start_value;
     inputs[i].until = millis();
   }
 }
@@ -110,7 +114,7 @@ void input(){
         inputs[i].state = current;
         inputs[i].until = t;
         DEBUG("Pin ") DEBUG(INPUTMAP[i].pin) DEBUG(" changed to ") DEBUG(current) DEBUG("\n")
-        if(current) {
+        if(current != inputs[i].polarity) {
           hit(INPUTMAP[i].channel, INPUTMAP[i].number);
         }
       }
