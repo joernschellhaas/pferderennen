@@ -95,7 +95,7 @@ void logic(){
 void setupInput(){
   for(uint8_t i = 0; i < COUNTOF(INPUTMAP); i++){
     pinMode(INPUTMAP[i].pin, INPUT);
-    inputs[i].state = 0;
+    inputs[i].state = digitalRead(INPUTMAP[i].pin);
     inputs[i].until = millis();
   }
 }
