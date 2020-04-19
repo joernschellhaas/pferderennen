@@ -1,6 +1,7 @@
 // (c) Jörn Schellhaas
 
-// Board: Sparkfun Pro Micro
+// Board: Sparkfun Pro Micro 5V/16MHz (https://github.com/sparkfun/Arduino_Boards)
+// Make sure you set it correctly in the IDE - otherwise you might brick the device
 #define VERSION "0.0trunk"
 
 #include <Adafruit_NeoPixel.h>
