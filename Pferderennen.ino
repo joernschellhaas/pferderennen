@@ -27,7 +27,7 @@ typedef struct{
 #define LED_COUNT (PLAYERS * STEPS)
 #define T_BLOCK_HIT 2000
 #define T_BLOCK_WIN 5000
-#define T_INPUT_TIMEOUT (10 * 60 * 1000)
+#define T_INPUT_TIMEOUT 600000
 #define T_DEBOUNCE 25
 #define COUNTOF(arr) (sizeof(arr) / sizeof(arr[0]))
 const uint32_t COLORS[] = {
@@ -51,8 +51,8 @@ uint8_t state;
 #define STATE_RUN 1
 #define STATE_DONE 2
 #define STATE_DONE_WAIT 3
-uint32_t stateSince;
-uint32_t lastInput;
+uint32_t stateSince = 0;
+uint32_t lastInput = 0;
 uint8_t winner;
 uint8_t input_state[PLAYERS] = {};
 t_inputstate inputs[COUNTOF(INPUTMAP)];
@@ -90,6 +90,7 @@ void logic(){
   switch(state){
     case STATE_RUN:
       if(millis() - lastInput > T_INPUT_TIMEOUT){
+        DEBUG("Last input: ") DEBUG(lastInput) DEBUG(", now: ") DEBUG(millis()) DEBUG("\n")
         setState(STATE_DONE);
       }
       break;
